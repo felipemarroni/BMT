@@ -22,6 +22,11 @@ with open( input, mode='r' ) as csv_file:
     for row in csv_reader:
         
         lista_invertida = eval( row[ 'ID' ] )
+        palavras = row['PALAVRA']
+        if len(palavras) <= 2:
+            continue
+        elif any(char.isdigit() for char in palavras):
+            continue        
         numdoc = -1
         
         for docnum in lista_invertida:
@@ -49,6 +54,12 @@ with open( input, mode='r' ) as csv_file:
     for row in csv_reader:
 
         lista_invertida = eval( row[ 'ID' ] )
+        palavras = row['PALAVRA']
+        if len(palavras) <= 2:
+            continue
+        elif any(char.isdigit() for char in palavras):
+            continue
+        
         numdoc = -1
         
         df = len( Counter( lista_invertida ).keys() )
@@ -61,7 +72,7 @@ with open( input, mode='r' ) as csv_file:
             else:
                 count = lista_invertida.count( docnum )
                 tf = float( count / dict[ docnum ] )
-                idf = math.log( len( lista_invertida ) / df )
+                idf = math.log( 1239 / df )
                 matriztd[ palavra ][ docnum - 1 ] = tf * idf
 
             numdoc = docnum

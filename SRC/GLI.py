@@ -39,7 +39,7 @@ def preProcessamento( lista, records ):
         abstract = ''.join(c for c in abstract if not c.isdigit())
         tokens = tokenizer.tokenize( abstract )
         abstract = [ w for w in tokens if not w.lower() in stopw]
-        #abstract = list( map( porter_nltk_st.stem, abstract ) )
+        abstract = list( map( porter_nltk_st.stem, abstract ) )
 
         for term_index in range( len( abstract ) ):
             abstract[ term_index ] = abstract[ term_index ].upper()

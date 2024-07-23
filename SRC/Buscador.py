@@ -19,9 +19,14 @@ with open( 'lista_invertida.csv', mode='r' ) as csv_file:
     csv_reader = csv.DictReader( csv_file, delimiter = ';') 
 
     for row in csv_reader:
-        
+   
         palavra = row[ 'PALAVRA' ]
+        if len(palavra) <= 2:
+            continue
+        elif any(char.isdigit() for char in palavra):
+            continue     
         palavras += [ palavra ]
+
 
 
 with open( consulta , mode='r' ) as csv_file:
@@ -53,7 +58,7 @@ matriztd = np.loadtxt( inputs[0], delimiter = ';', dtype = float )
 document_norm_vector = np.loadtxt( inputs[1], delimiter = ';', dtype = float )
 
 
-### Matriz de porduto escalar M[Q][D]
+### Matriz de produto escalar M[Q][D]
 
 def gerarMatrizEscalar( matrizqpesos, matrizpesos ):
     
@@ -94,8 +99,10 @@ def gerarMatrizSimilaridade( matrizpe, matrizpn ):
 
         vector_similaridade = []
         for document in range( len( matrizpe[0] ) ):
-            vector_similaridade += [ matrizpe[ query ][ document ] / matrizpn[ query ][ document ] ]
-        
+            if matrizpn[query][document] != 0:            
+                vector_similaridade += [ matrizpe[ query ][ document ] / matrizpn[ query ][ document ] ]
+            else:
+                vector_similaridade += [ matrizpe[ query ][ document ] * 3]
         matriz_similaridade += [ vector_similaridade ]
     
     return matriz_similaridade
@@ -104,16 +111,30 @@ x = gerarMatrizEscalar( query_matrix, matriztd )
 y = gerarMatrizNormas( query_norm_vector, document_norm_vector )
 z = gerarMatrizSimilaridade( x, y )
 
+
 matriz_output = []
 
-for querynum in range( len( z ) ) :
+for k in range(len(z)):
+    j = sorted(range(len(z[k])), key=lambda i: z[k][i])[-50:]
+    vetor = []
+    for m in range(50):
+        tupla = [(m + 1, j[-(m + 1)] + 1, round(z[k][j[-(m + 1)]], 3))]
+        vetor += tupla
+    matriz_output += [[k + 1, vetor]]
 
-    vector_output = []
+print(matriz_output[0])
+# for indice, query in enumerate(z):
 
-    vector_output += [ querynum + 1 ]
+#     query_10 = query.sort()
+#     for valor in range(10):
 
-    vector_output += [ [ max( z[ querynum ] ), z[ querynum ].index( max( z[ querynum ] ) ) + 1 ] ]
-    matriz_output += [ vector_output ]
+
+#     vector_output = []
+
+#     vector_output += [ indice + 1 ]
+
+#     vector_output += [ [ max( z[ indice ] ), z[ indice ].index(max(z[ indice])) + 1]]
+#     matriz_output += [ vector_output ]
 
 df = pd.DataFrame( data = matriz_output ) 
 df.to_csv( resultfile, sep = ';', header = False, float_format = '%.2f', index = False )
